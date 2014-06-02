@@ -43,7 +43,7 @@ sshdを`reload`
   
 公開鍵をRaspberry PIにコピーする．
 
-    $ scp ~/.ssh/id_rsa chef@192.168.1.100:/home/chef/.ssh/authorized_keys
+    $ scp ~/.ssh/id_rsa Raspberrypi:/home/chef/.ssh/authorized_keys
 
 ## chef実行
 
