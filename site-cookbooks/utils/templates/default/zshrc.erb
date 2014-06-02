@@ -1,0 +1,82 @@
+## Default shell configuration
+# 環境変数
+# Gemがこけるので追加! でも，-Wno-error ってサポートされなくなるらしい．どうすりゃいいだ．
+export ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future
+# ls の色設定
+export LSCOLORS=gxfxcxdxbxegedabagacad
+
+#
+# auto change directory
+#
+setopt auto_cd
+
+#
+# Complement
+#
+autoload -U compinit; compinit # 補完機能を有効
+setopt auto_list # 補完候補を一覧で表示
+setopt auto_menu # キー連打で補完候補を順に表示
+setopt list_packed # 詰めて表示
+setopt list_types # ファイルの種類も表示
+setopt correct
+#bindkey "^[[Z" reverse-menu-complete　# Shift-Tabで補完候補逆順
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # 大文字小文字を区別しない
+
+#
+# colors
+#
+autoload -U colors; colors
+
+#
+# History
+#
+HISTFILE=~/.zsh_history # ヒストリの保存先
+HISTSIZE=10000 # メモリに保存されるヒストリの件数
+SAVEHIST=10000 # 保存されるヒストリの件数
+setopt bang_hist
+setopt extended_history
+setopt share_history
+setopt hist_reduce_blanks
+
+#
+# alias
+#
+# ls関連
+alias ls="ls -G"
+alias la="ls -alG"
+
+# emacs関連
+alias em="emacs"
+alias e="emacs"
+
+# git関連
+alias gl="git log"
+alias gst="git status"
+alias gc="git commit"
+alias gb="git branch"
+alias gck="git checkout"
+alias gd="git diff --color"
+
+#
+# ブランチを間違えないために
+#
+# VCSの情報を取得
+autoload -Uz vcs_info
+
+# 表示フォーマットの指定
+# %b ブランチ情報
+# %a アクション名（mergeなど）
+zstyle ':vcs_info:*' formats '[%b]'
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+precmd () {
+    psvar=()
+    LANG=en_US.UTF-8 vcs_info
+    [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+}
+
+#
+# set prompt
+#
+PROMPT="%B%m:%n%#%b "
+RPROMPT="%1(vl%F{magenta}%1v%fl) %F{green}%K{red}[%~]%k%f"
+SPROMPT="corrent: %R -> %r?"

@@ -1,0 +1,132 @@
+;; load-path
+(add-to-list 'load-path
+	     (expand-file-name "~/.emacs.d/elisp/yasnippet"))
+
+;;; 初期フレームの設定
+(setq default-frame-alist
+      (append (list '(foreground-color . "white")
+		    '(background-color . "black")
+		    '(border-color . "black")
+		    '(mouse-color . "white")
+		    '(cursor-color . "blue")
+		    '(width . 90)
+		    '(height . 40)
+		    '(top . 15)
+		    '(left . 650)
+;		    '(font . "Ricty")
+		    )
+	      default-frame-alist))
+
+(set-frame-font "ricty-14")
+
+;;; f6 でEshell起動
+(global-set-key [f6] 'eshell)
+
+;;; モードラインに時刻表示
+(display-time)
+
+;; 行番号•桁番号表示
+(line-number-mode 1)
+(column-number-mode 1)
+
+;;; 現在行に色を付ける
+(global-hl-line-mode 1)
+(set-face-background 'hl-line "deep sky blue")
+(set-face-foreground 'highlight "wheat")
+
+;; 分割windowにしたときのカーソル移動設定(Shift-↑,←,↓,→ で移動)
+;; macだとShift-↑，↓は変なショートカットに割り当てられてる（後で考える）
+(global-set-key (kbd "C-S-<left>") 'windmove-left)
+(global-set-key (kbd "C-S-<right>") 'windmove-right)
+(global-set-key (kbd "C-S-<up>") 'windmove-up)
+(global-set-key (kbd "C-S-<down>") 'windmove-down)
+
+;; タイムスタンプ
+;; 仕事で使うときはどうするんだろ？（後で考える）
+;(require 'time-stamp)
+;(add-hook 'before-save-hook 'time-stamp)
+;(setq time-stamp-active t)
+;(setq time-stamp-start "last update : ")
+;(setq time-stamp-format "%04y/%02m/%02d")
+;(setq time-stamp-end " \\|$")
+
+;; 括弧補完
+(global-set-key (kbd "(") 'skeleton-pair-insert-maybe)
+(global-set-key (kbd "{") 'skeleton-pair-insert-maybe)
+(global-set-key (kbd "[") 'skeleton-pair-insert-maybe)
+;(global-set-key (kbd "<") 'skeleton-pair-insert-maybe)
+(global-set-key (kbd "\"") 'skeleton-pair-insert-maybe)
+(setq skeleton-pair 1)
+
+;; 対応する括弧を表示させる
+(show-paren-mode 1)
+; 色設定
+(setq show-paren-style 'mixed)
+; マッチしたとき
+(set-face-foreground 'show-paren-match-face "black")
+(set-face-background 'show-paren-match-face "green")
+; ミスマッチしたときの設定
+(set-face-foreground 'show-paren-mismatch-face "black")
+(set-face-background 'show-paren-mismatch-face "light coral")
+
+;; リージョン選択時に色を付ける
+(transient-mark-mode 1)
+
+;; C-; でリージョン選択された行をコメントアウト（コメントされている場合は解除）
+(global-set-key (kbd "C-;") 'comment-or-uncomment-region)
+
+;; 指定行へ移動
+(global-set-key (kbd "C-c l") 'goto-line)
+
+;; cua-mode
+;; 矩形選択
+(cua-mode t)
+(setq cua-enable-cua-keys 0)
+
+;; yと入力する
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; ファイル内のカーソル位置を記録
+(setq-default save-place t)
+(require 'saveplace)
+
+;; 最終行に必ず一行挿入
+(setq require-final-newline t)
+
+;; eshell 文字化け対策
+(add-hook 'set-language-environment-hook 
+          (lambda ()
+            (when (equal "ja_JP.UTF-8" (getenv "LANG"))
+              (setq default-process-coding-system '(utf-8 . utf-8))
+              (setq default-file-name-coding-system 'utf-8))
+            (when (equal "Japanese" current-language-environment)
+              (setq default-buffer-file-coding-system 'utf-8))))
+
+(set-language-environment "Japanese")
+
+;; 大文字と小文字を区別しない
+(setq read-buffer-completion-ignore-case t)
+(setq read-file-name-completion-ignore-case t)
+
+;; タブ幅の設定
+(setq default-tab-width 4)
+
+;; ツールバーとスクロールバーを非表示
+;(tool-bar-mode 0)
+;(scroll-bar-mode 0)
+
+;; yasnippet
+(require 'yasnippet)
+;; スニペットの保存先
+(setq yas-snippetdir
+      '("~/.emacs.d/snippets" ;; 自作スニペット
+	"~/.emacs.d/elisp/yasnippet/snippets" ;; デフォルトのスニペット
+	))
+(yas-global-mode 1)
+
+;; 既存スニペットを挿入
+(define-key yas-minor-mode-map (kbd "C-x i i") 'yas-insert-snippet)
+;; 新規スニペットを作成するバッファを用意する
+(define-key yas-minor-mode-map (kbd "C-x i n") 'yas-new-snippet)
+;; 既存スニペットを閲覧・編集する
+(define-key yas-minor-mode-map (kbd "C-x i v") 'yas-visit-snippet-file)
